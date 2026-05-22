@@ -3,12 +3,13 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 COPY . .
-RUN npx tsc && cp -r migrations dist/
+RUN npx tsc && mkdir -p /app/migrations && cp migrations/* /app/migrations/
 
 FROM node:22-alpine
 WORKDIR /app
 RUN apk add --no-cache tini curl
 COPY --from=builder /app/dist /app/dist
+COPY --from=builder /app/migrations /app/migrations
 COPY --from=builder /app/package*.json /app/
 RUN npm ci --omit=dev --ignore-scripts && npm cache clean --force
 
