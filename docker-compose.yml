@@ -4,7 +4,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - "${APP_PORT:-3000}:3000"
     environment:
       - PORT=3000
       - HOST=0.0.0.0
@@ -13,7 +13,7 @@ services:
       - JWT_SECRET=${JWT_SECRET:-change-me}
       - JWT_EXPIRES_IN=7d
       - REDIS_URL=redis://redis:6379/0
-      - CORS_ORIGIN=http://localhost:5173
+      - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:5173}
       - LOG_LEVEL=info
     depends_on:
       db:
@@ -27,9 +27,9 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
-      - "5173:5173"
+      - "${FRONTEND_PORT:-5173}:5173"
     environment:
-      - VITE_API_URL=http://localhost:3000
+      - VITE_API_URL=/api
     depends_on:
       - app
     restart: unless-stopped
@@ -40,7 +40,7 @@ services:
       - "5432"
     environment:
       POSTGRES_USER: clayite
-      POSTGRES_PASSWORD: ${DB_PASS:-cla…}
+      POSTGRES_PASSWORD: ${DB_PASS:-clayite_pass}
       POSTGRES_DB: clayite
     volumes:
       - pgdata:/var/lib/postgresql/data
