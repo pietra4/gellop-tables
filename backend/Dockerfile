@@ -3,7 +3,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 COPY . .
-RUN npx tsc && mkdir -p /app/migrations && cp migrations/* /app/migrations/
+RUN npx tsc
 
 FROM node:22-alpine
 WORKDIR /app
