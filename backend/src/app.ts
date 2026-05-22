@@ -2,6 +2,7 @@ import Fastify from 'fastify';
 import fastifyCors from 'fastify-cors';
 import { initializeDatabase, closeDatabase } from './core/database.js';
 import { errorHandler } from './middleware/errorHandler.js';
+import { addSecurityHeaders } from './middleware/securityHeaders.js';
 import { userRoutes } from './modules/users/routes.js';
 import logger from './utils/logger.js';
 
@@ -22,6 +23,11 @@ await app.register(fastifyCors, {
 
 // Error handler
 app.setErrorHandler(errorHandler);
+
+// Security headers on all responses
+app.addHook('onSend', async (request, reply) => {
+  addSecurityHeaders(reply);
+});
 
 // Routes
 await userRoutes(app);
