@@ -8,27 +8,28 @@
     "dev": "tsx watch src/app.ts",
     "build": "tsc",
     "start": "node dist/app.js",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
+    "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watch",
+    "test:coverage": "NODE_OPTIONS=--experimental-vm-modules jest --coverage",
     "migrate": "node migrations/run.js",
     "lint": "eslint src --ext .ts",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "fastify": "^4.26.0",
-    "fastify-cors": "^8.4.2",
-    "fastify-jwt": "^7.8.0",
+    "@fastify/cors": "^9.0.1",
     "pg": "^8.11.3",
     "zod": "^3.22.4",
     "bcrypt": "^5.1.1",
-    "pg-boss": "^10.1.2",
+    "pg-boss": "^12.18.2",
     "winston": "^3.11.0",
-    "jsonwebtoken": "^9.1.2"
+    "jsonwebtoken": "^9.0.2"
   },
   "devDependencies": {
     "@types/node": "^20.10.6",
     "@types/bcrypt": "^5.0.2",
+    "@types/pg": "^8.10.9",
+    "@types/jsonwebtoken": "^9.0.5",
     "@typescript-eslint/eslint-plugin": "^6.18.0",
     "@typescript-eslint/parser": "^6.18.0",
     "eslint": "^8.56.0",
@@ -38,7 +39,6 @@
     "supertest": "^6.3.3",
     "@types/supertest": "^6.0.2",
     "typescript": "^5.3.3",
-    "tsx": "^4.7.0",
-    "ts-node": "^10.9.2"
+    "tsx": "^4.7.0"
   }
 }

@@ -1,5 +1,5 @@
 import Fastify from 'fastify';
-import fastifyCors from 'fastify-cors';
+import fastifyCors from '@fastify/cors';
 import { initializeDatabase, closeDatabase } from './core/database.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { addSecurityHeaders } from './middleware/securityHeaders.js';

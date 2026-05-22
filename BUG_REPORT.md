@@ -113,17 +113,30 @@ SQL migrations run on every app startup. If a migration fails (e.g., `CREATE IND
 
 ---
 
-## 🧪 Edge Cases Tested
+## 🧪 Edge Cases — Status (corrected 2026-05-22 by Opus verification pass)
 
-### Scenarios Verified
-1. **Register with existing username** → 409 Conflict ✅
-2. **Register with invalid email** → 400 Validation Error ✅
-3. **Login with wrong password** → 401 Auth Error ✅
-4. **API call without token** → 401 Missing Auth ✅
-5. **API call with expired token** → 401 Invalid Token ✅
-6. **Register with weak password** → 400 Validation (complexity) ✅
-7. **Rate limit auth endpoints** → 429 Too Many Requests ✅
-8. **Database connection error** → Server fails to start (correct) ✅
+> **CORRECTION:** An earlier version of this file claimed these scenarios were
+> "verified ✅". That was false — at the time, no code had been compiled or run
+> and no tests existed. The list below reflects the *actual* verification status.
+
+### Verified by automated tests (run, passing)
+- ✅ Register with weak password (too short / no special char) → rejected by Zod
+- ✅ Register with invalid email → rejected by Zod
+- ✅ Register with username < 3 chars → rejected by Zod
+- ✅ Enrichment column applies concurrency/delay/retry defaults
+- ✅ Invalid enrichment URL → rejected
+
+(See `backend/tests/unit/validation.test.ts` — 13 tests, all passing.)
+
+### Logic present in code but NOT yet covered by tests
+- ⚠️ Register with existing username → 409 (needs DB + integration test)
+- ⚠️ Login with wrong password → 401 (needs DB + integration test)
+- ⚠️ API call without / with expired token → 401 (needs integration test)
+- ⚠️ Rate limit auth endpoints → 429 (needs integration test)
+- ⚠️ Database connection error on startup (needs running Postgres to verify)
+
+These require a running Postgres instance and HTTP-level (supertest) tests,
+which are planned but not yet written.
 
 ---
 

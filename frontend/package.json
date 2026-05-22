@@ -13,7 +13,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "axios": "^1.6.2",
-    "glide-data-grid": "^6.0.0",
+    "@glideapps/glide-data-grid": "^6.0.3",
     "zustand": "^4.4.1"
   },
   "devDependencies": {

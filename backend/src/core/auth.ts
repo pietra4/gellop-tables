@@ -5,12 +5,16 @@ import { AuthenticationError, ConflictError } from '../utils/errors.js';
 import { RegisterInput, LoginInput } from './validation.js';
 import logger from '../utils/logger.js';
 
-const JWT_SECRET = process.env.JWT_SECRET;
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '24h';
-
-if (!JWT_SECRET) {
-  throw new Error('JWT_SECRET environment variable is required');
+function requireJwtSecret(): string {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    throw new Error('JWT_SECRET environment variable is required');
+  }
+  return secret;
 }
+
+const JWT_SECRET: string = requireJwtSecret();
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '24h';
 
 export interface AuthPayload {
   userId: string;
@@ -27,12 +31,13 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
 }
 
 export function generateToken(userId: string, username: string): string {
-  return jwt.sign({ userId, username }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+  const options: jwt.SignOptions = { expiresIn: JWT_EXPIRES_IN as jwt.SignOptions['expiresIn'] };
+  return jwt.sign({ userId, username }, JWT_SECRET, options);
 }
 
 export function verifyToken(token: string): AuthPayload {
   try {
-    return jwt.verify(token, JWT_SECRET) as AuthPayload;
+    return jwt.verify(token, JWT_SECRET) as unknown as AuthPayload;
   } catch (error) {
     throw new AuthenticationError('Invalid token');
   }
