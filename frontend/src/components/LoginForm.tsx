@@ -23,38 +23,57 @@ export const LoginForm: React.FC<{ onSuccess?: () => void }> = ({ onSuccess }) =
     }
   };
 
+  const toggleMode = () => {
+    setIsLogin(!isLogin);
+    setUsername('');
+    setEmail('');
+    setPassword('');
+  };
+
   return (
     <div className="login-container">
       <form onSubmit={handleSubmit} className="login-form">
         <h1>{isLogin ? 'Login' : 'Register'}</h1>
 
-        {error && <div className="error-message">{error}</div>}
+        {error && <div className="error-message" role="alert">{error}</div>}
 
-        <input
-          type="text"
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          required
-        />
-
-        {!isLogin && (
+        <div className="form-group">
+          <label htmlFor="username">Username</label>
           <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            id="username"
+            type="text"
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             required
           />
+        </div>
+
+        {!isLogin && (
+          <div className="form-group">
+            <label htmlFor="email">Email</label>
+            <input
+              id="email"
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
         )}
 
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
+        <div className="form-group">
+          <label htmlFor="password">Password</label>
+          <input
+            id="password"
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
 
         <button type="submit" disabled={loading}>
           {loading ? 'Loading...' : isLogin ? 'Login' : 'Register'}
@@ -62,7 +81,7 @@ export const LoginForm: React.FC<{ onSuccess?: () => void }> = ({ onSuccess }) =
 
         <button
           type="button"
-          onClick={() => setIsLogin(!isLogin)}
+          onClick={toggleMode}
           className="toggle-btn"
         >
           {isLogin ? "Don't have an account? Register" : 'Already have an account? Login'}

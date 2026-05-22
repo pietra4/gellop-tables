@@ -4,13 +4,13 @@ import { LoginForm } from './components/LoginForm';
 import './App.css';
 
 export const App: React.FC = () => {
-  const { user, token, checkAuth } = useAuth();
+  const { user, token, checkAuth, logout } = useAuth();
 
   useEffect(() => {
     if (token) {
       checkAuth();
     }
-  }, [token]);
+  }, [token, checkAuth]);
 
   if (!user) {
     return <LoginForm onSuccess={() => checkAuth()} />;
@@ -22,12 +22,7 @@ export const App: React.FC = () => {
         <h1>Clay-lite</h1>
         <div className="user-info">
           <span>Welcome, {user.username}</span>
-          <button onClick={() => {
-            localStorage.removeItem('token');
-            window.location.reload();
-          }}>
-            Logout
-          </button>
+          <button onClick={logout}>Logout</button>
         </div>
       </div>
       <main className="content">
