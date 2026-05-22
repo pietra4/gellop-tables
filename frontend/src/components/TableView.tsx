@@ -8,7 +8,7 @@ import { Column } from '../types';
 import '@glideapps/glide-data-grid/dist/index.css';
 import './TableView.css';
 
-const WS_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:3000/ws';
+const WS_URL = import.meta.env.VITE_WS_URL || '/ws';
 
 interface EnrichmentConfigForm {
   url: string;
