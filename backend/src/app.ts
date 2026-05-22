@@ -39,12 +39,13 @@ await app.register(fastifyCors, {
 await app.register(fastifyWebsocket);
 
 app.register(async function (fastify) {
-  fastify.get('/ws', { websocket: true }, (socket, req) => {
+  fastify.get('/ws', { websocket: true }, (stream, req) => {
+    const socket: any = stream.socket; // raw ws WebSocket
     socket.on('message', (data: Buffer) => {
       try {
         const msg = JSON.parse(data.toString());
         if (msg.type === 'subscribe' && msg.tableId) {
-          socket.tableId = msg.tableId;
+          (socket as any).tableId = msg.tableId;
           socket.send(JSON.stringify({ type: 'subscribed', tableId: msg.tableId }));
         }
       } catch {
