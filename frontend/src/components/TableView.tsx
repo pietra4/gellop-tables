@@ -313,6 +313,26 @@ export const TableView: React.FC = () => {
 
       {showImport && (
         <div className="inline-form import-form">
+          <div style={{ marginBottom: 8 }}>
+            <label style={{ cursor: 'pointer', color: '#4a7cf7' }}>
+              📂 Scegli file CSV
+              <input
+                type="file"
+                accept=".csv,text/csv"
+                style={{ display: 'none' }}
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  const reader = new FileReader();
+                  reader.onload = (ev) => {
+                    setImportText(ev.target?.result as string || '');
+                  };
+                  reader.readAsText(file);
+                }}
+              />
+            </label>
+            <span style={{ marginLeft: 10, color: '#999', fontSize: 12 }}>oppure incolla qui sotto</span>
+          </div>
           <textarea
             placeholder="Paste CSV content here…"
             value={importText}
