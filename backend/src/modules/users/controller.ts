@@ -3,6 +3,7 @@ import { register, login, getUser } from '../../core/auth.js';
 import { RegisterSchema, LoginSchema } from '../../core/validation.js';
 import { extractUserId } from '../../middleware/auth.js';
 import { ValidationError } from '../../utils/errors.js';
+import { z } from 'zod';
 
 export async function registerHandler(request: FastifyRequest, reply: FastifyReply) {
   try {
@@ -14,8 +15,8 @@ export async function registerHandler(request: FastifyRequest, reply: FastifyRep
       token: result.token,
     });
   } catch (error) {
-    if (error instanceof Error && error.name === 'ZodError') {
-      throw new ValidationError('Invalid input');
+    if (error instanceof z.ZodError) {
+      throw new ValidationError('Invalid input: ' + error.errors[0].message);
     }
     throw error;
   }
@@ -32,8 +33,8 @@ export async function loginHandler(request: FastifyRequest, reply: FastifyReply)
       token: result.token,
     });
   } catch (error) {
-    if (error instanceof Error && error.name === 'ZodError') {
-      throw new ValidationError('Invalid input');
+    if (error instanceof z.ZodError) {
+      throw new ValidationError('Invalid input: ' + error.errors[0].message);
     }
     throw error;
   }
@@ -42,6 +43,10 @@ export async function loginHandler(request: FastifyRequest, reply: FastifyReply)
 export async function meHandler(request: FastifyRequest, reply: FastifyReply) {
   const userId = extractUserId(request);
   const user = await getUser(userId);
+
+  if (!user) {
+    throw new ValidationError('User not found');
+  }
 
   reply.send(user);
 }
