@@ -1,4 +1,4 @@
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { query } from './database.js';
 import { AuthenticationError, ConflictError } from '../utils/errors.js';
