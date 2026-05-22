@@ -3,8 +3,8 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    ports:
-      - "${APP_PORT:-3000}:3000"
+    expose:
+      - "3000"
     environment:
       - PORT=3000
       - HOST=0.0.0.0
@@ -33,6 +33,17 @@ services:
     depends_on:
       - app
     restart: unless-stopped
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    command: tunnel run
+    environment:
+      - TUNNEL_TOKEN=${CF_TUNNEL_TOKEN}
+    depends_on:
+      - frontend
+    profiles:
+      - cloudflare
 
   db:
     image: postgres:16-alpine
