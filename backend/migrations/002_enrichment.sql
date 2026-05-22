@@ -13,8 +13,8 @@ CREATE TABLE IF NOT EXISTS enrichment_runs (
   completed_at TIMESTAMP
 );
 
-CREATE INDEX idx_enrichment_runs_table_column ON enrichment_runs(table_id, column_name);
-CREATE INDEX idx_enrichment_runs_status ON enrichment_runs(status);
+CREATE INDEX IF NOT EXISTS idx_enrichment_runs_table_column ON enrichment_runs(table_id, column_name);
+CREATE INDEX IF NOT EXISTS idx_enrichment_runs_status ON enrichment_runs(status);
 
 -- Enrichment execution logs (one per row per run)
 CREATE TABLE IF NOT EXISTS enrichment_logs (
@@ -28,5 +28,5 @@ CREATE TABLE IF NOT EXISTS enrichment_logs (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_enrichment_logs_run ON enrichment_logs(run_id);
-CREATE INDEX idx_enrichment_logs_row ON enrichment_logs(row_id);
+CREATE INDEX IF NOT EXISTS idx_enrichment_logs_run ON enrichment_logs(run_id);
+CREATE INDEX IF NOT EXISTS idx_enrichment_logs_row ON enrichment_logs(row_id);

@@ -23,9 +23,18 @@ export async function initializeDatabase(): Promise<void> {
     for (const migrationFile of ['001_init_schema.sql', '002_enrichment.sql']) {
       const migrationPath = path.join(__dirname, '../../migrations', migrationFile);
       if (fs.existsSync(migrationPath)) {
-        const sql = fs.readFileSync(migrationPath, 'utf-8');
-        await client.query(sql);
-        logger.info(`Applied migration: ${migrationFile}`);
+        try {
+          const sql = fs.readFileSync(migrationPath, 'utf-8');
+          await client.query(sql);
+          logger.info(`Applied migration: ${migrationFile}`);
+        } catch (error: any) {
+          if (error?.code === '42P07' || error?.message?.includes('already exists')) {
+            logger.info(`Migration ${migrationFile} already applied, skipping`);
+          } else {
+            logger.error(`Migration ${migrationFile} failed`, error);
+            throw error;
+          }
+        }
       }
     }
 

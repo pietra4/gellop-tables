@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS tables (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_tables_user_id ON tables(user_id);
+CREATE INDEX IF NOT EXISTS idx_tables_user_id ON tables(user_id);
 
 -- Rows (data rows in tables)
 CREATE TABLE IF NOT EXISTS rows (
@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS rows (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_rows_table_id ON rows(table_id);
+CREATE INDEX IF NOT EXISTS idx_rows_table_id ON rows(table_id);
 
 -- Enrichment jobs (background queue via pg-boss)
 CREATE TABLE IF NOT EXISTS jobs (
@@ -58,5 +58,5 @@ CREATE TABLE IF NOT EXISTS webhook_tokens (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_webhook_tokens_table_id ON webhook_tokens(table_id);
-CREATE INDEX idx_webhook_tokens_token ON webhook_tokens(token);
+CREATE INDEX IF NOT EXISTS idx_webhook_tokens_table_id ON webhook_tokens(table_id);
+CREATE INDEX IF NOT EXISTS idx_webhook_tokens_token ON webhook_tokens(token);
