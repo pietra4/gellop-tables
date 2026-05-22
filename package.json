@@ -1,0 +1,12 @@
+{
+  "name": "clayite",
+  "version": "0.1.0",
+  "description": "Clay-lite: self-hosted data table platform",
+  "private": true,
+  "scripts": {
+    "dev": "docker-compose up",
+    "build": "docker-compose build",
+    "down": "docker-compose down",
+    "logs": "docker-compose logs -f"
+  }
+}
