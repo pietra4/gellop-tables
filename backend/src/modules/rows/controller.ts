@@ -78,10 +78,21 @@ export async function importCsvHandler(request: FastifyRequest, reply: FastifyRe
   const { id: tableId } = request.params as { id: string };
 
   const body = request.body;
-  const csvContent = typeof body === 'string' ? body : (body as { content?: string })?.content;
+  let csvContent = '';
 
-  if (typeof csvContent !== 'string' || csvContent.trim() === '') {
-    throw new ValidationError('Request body must be CSV text (text/csv) or { content: "<csv>" }');
+  if (typeof body === 'string') {
+    csvContent = body;
+  } else if (Buffer.isBuffer(body)) {
+    csvContent = body.toString('utf-8');
+  } else if (body && typeof body === 'object') {
+    csvContent = (body as any).content || (body as any).csv || '';
+    if (typeof csvContent !== 'string') {
+      csvContent = JSON.stringify(body);
+    }
+  }
+
+  if (!csvContent || typeof csvContent !== 'string' || !csvContent.trim()) {
+    throw new ValidationError('No CSV content found — send raw text/csv or { content: "..." }');
   }
 
   const result = await rowService.importCsv(tableId, userId, csvContent);
