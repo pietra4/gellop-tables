@@ -12,6 +12,7 @@ interface TablesState {
   loading: boolean;
   error: string | null;
   fetchTables: () => Promise<void>;
+  getTable: (id: string) => Promise<Table>;
   createTable: (payload: CreateTablePayload) => Promise<Table>;
   deleteTable: (id: string) => Promise<void>;
   addColumn: (tableId: string, column: Partial<Column> & { name: string; type: string }) => Promise<Table>;
@@ -35,6 +36,23 @@ export const useTables = create<TablesState>((set, get) => ({
       set({ error: message(error, 'Failed to load tables') });
     } finally {
       set({ loading: false });
+    }
+  },
+
+  getTable: async (id) => {
+    set({ error: null });
+    try {
+      const response = await client.get<Table>(`/tables/${id}`);
+      set({
+        tables: get().tables.some((t) => t.id === id)
+          ? get().tables.map((t) => (t.id === id ? response.data : t))
+          : [response.data, ...get().tables],
+      });
+      return response.data;
+    } catch (error: any) {
+      const msg = message(error, 'Failed to load table');
+      set({ error: msg });
+      throw new Error(msg);
     }
   },
 

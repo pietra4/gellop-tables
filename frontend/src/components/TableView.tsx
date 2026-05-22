@@ -34,7 +34,7 @@ export const TableView: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  const { fetchTables, addColumn, deleteTable } = useTables();
+  const { fetchTables, getTable, addColumn, deleteTable } = useTables();
   const { rows, total, error, fetchRows, updateRow, deleteRow, importCsv } = useRows();
   const { currentRun, startEnrichment, updateRunProgress } = useEnrichment();
 
@@ -47,26 +47,34 @@ export const TableView: React.FC = () => {
   const [enrichConfig, setEnrichConfig] = useState<EnrichmentConfigForm>(defaultEnrichmentConfig);
   const [contextMenu, setContextMenu] = useState<{ row: number; col: number; x: number; y: number } | null>(null);
   const [enrichError, setEnrichError] = useState<string | null>(null);
+  const [importStatus, setImportStatus] = useState<string | null>(null);
+  const [isImporting, setIsImporting] = useState(false);
 
   const wsRef = useRef<WebSocket | null>(null);
 
   const tables = useTables((s) => s.tables);
 
+  const loadTable = useCallback(async (tableId: string) => {
+    const freshTable = await getTable(tableId);
+    setTable(freshTable);
+    await fetchRows(tableId);
+  }, [getTable, fetchRows]);
+
   // Load table
   useEffect(() => {
     if (!id) return;
     fetchTables();
-  }, [id, fetchTables]);
+    loadTable(id).catch(() => undefined);
+  }, [id, fetchTables, loadTable]);
 
   useEffect(() => {
     if (id && tables.length > 0) {
       const found = tables.find((t) => t.id === id);
       if (found) {
         setTable(found);
-        fetchRows(id);
       }
     }
-  }, [id, tables, fetchRows]);
+  }, [id, tables]);
 
   // WebSocket for real-time enrichment updates
   useEffect(() => {
@@ -203,17 +211,26 @@ export const TableView: React.FC = () => {
     setContextMenu(null);
   };
 
-  const handleImport = async () => {
-    if (!id || !importText.trim()) return;
+  const runImport = async (csvText: string) => {
+    if (!id || !csvText.trim()) return;
+    setIsImporting(true);
+    setImportStatus(null);
+    setEnrichError(null);
     try {
-      await importCsv(id, importText);
+      const result = await importCsv(id, csvText);
       setImportText('');
       setShowImport(false);
-      await fetchRows(id);
-    } catch {
-      // error in store
+      await loadTable(id);
+      setImportStatus(`Imported ${result.imported} rows and ${result.columns.length} columns`);
+    } catch (err: any) {
+      setImportStatus(null);
+      setEnrichError(err?.message || 'Import failed');
+    } finally {
+      setIsImporting(false);
     }
   };
+
+  const handleImport = async () => runImport(importText);
 
   if (!table) {
     return <div className="table-view"><p className="loading">Loading table...</p></div>;
@@ -225,9 +242,11 @@ export const TableView: React.FC = () => {
   return (
     <div className="table-view">
       <div className="table-toolbar">
-        <button className="btn-back" onClick={() => navigate('/')}>← Back</button>
-        <h2>{table.name}</h2>
-        {table.description && <span className="table-desc">{table.description}</span>}
+        <button className="btn-back" onClick={() => navigate('/')} aria-label="Back to dashboard">←</button>
+        <div className="table-title">
+          <h2>{table.name}</h2>
+          {table.description && <span className="table-desc">{table.description}</span>}
+        </div>
         <div className="toolbar-actions">
           <span className="row-count">{total} rows</span>
           <button className="btn-secondary" onClick={() => setShowAddColumn(!showAddColumn)}>
@@ -313,9 +332,9 @@ export const TableView: React.FC = () => {
 
       {showImport && (
         <div className="inline-form import-form">
-          <div style={{ marginBottom: 8 }}>
-            <label style={{ cursor: 'pointer', color: '#4a7cf7' }}>
-              📂 Scegli file CSV (import automatico)
+          <div className="import-header">
+            <label className="file-picker">
+              Scegli file CSV
               <input
                 type="file"
                 accept=".csv,text/csv"
@@ -326,27 +345,24 @@ export const TableView: React.FC = () => {
                   const reader = new FileReader();
                   reader.onload = async (ev) => {
                     const text = ev.target?.result as string || '';
-                    if (!text.trim()) return;
-                    try {
-                      await importCsv(table.id, text);
-                      await fetchRows(table.id);
-                      setShowImport(false);
-                    } catch { /* error in store */ }
+                    await runImport(text);
                   };
                   reader.readAsText(file);
                 }}
               />
             </label>
-            <span style={{ marginLeft: 10, color: '#999', fontSize: 12 }}>oppure incolla qui sotto e clicca Import</span>
+            <span>oppure incolla il CSV qui sotto</span>
           </div>
           <textarea
-            placeholder="Paste CSV content here…"
+            placeholder="name,email,company&#10;Ada Lovelace,ada@example.com,Analytical Engines"
             value={importText}
             onChange={(e) => setImportText(e.target.value)}
             rows={6}
           />
           <div className="form-actions">
-            <button className="btn-primary" onClick={handleImport}>Import</button>
+            <button className="btn-primary" onClick={handleImport} disabled={isImporting || !importText.trim()}>
+              {isImporting ? 'Importing...' : 'Import'}
+            </button>
             <button className="btn-secondary" onClick={() => setShowImport(false)}>Cancel</button>
           </div>
         </div>
@@ -354,6 +370,7 @@ export const TableView: React.FC = () => {
 
       {error && <div className="error">{error}</div>}
       {enrichError && <div className="error">{enrichError}</div>}
+      {importStatus && <div className="success">{importStatus}</div>}
 
       {/* Enrichment progress bar */}
       {currentRun && currentRun.status === 'running' && (
@@ -394,7 +411,8 @@ export const TableView: React.FC = () => {
       <div className="grid-container">
         {gridColumns.length === 0 ? (
           <div className="empty-grid">
-            <p>No columns yet. Add a column to start entering data.</p>
+            <button className="btn-primary" onClick={() => setShowImport(true)}>Import CSV</button>
+            <button className="btn-secondary" onClick={() => setShowAddColumn(true)}>Add column</button>
           </div>
         ) : (
           <DataEditor

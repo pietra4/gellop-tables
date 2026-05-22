@@ -69,7 +69,7 @@ export async function updateRow(
 ): Promise<RowRecord> {
   await assertTableAccess(tableId, userId);
   await tableService.ensureColumns(tableId, userId, Object.keys(data));
-  return rowRepository.update(rowId, tableId, data);
+  return rowRepository.patchData(rowId, tableId, data);
 }
 
 export async function deleteRow(rowId: string, tableId: string, userId: string): Promise<void> {

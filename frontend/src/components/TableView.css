@@ -2,22 +2,29 @@
   height: 100vh;
   display: flex;
   flex-direction: column;
+  background: #f6f7fb;
 }
 
 .table-toolbar {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.75rem 1rem;
+  padding: 0.7rem 1rem;
   background: white;
   border-bottom: 1px solid #e0e0e0;
   flex-wrap: wrap;
+  min-height: 64px;
 }
 
-.table-toolbar h2 {
+.table-title {
+  min-width: 180px;
+  margin-right: auto;
+}
+
+.table-title h2 {
   font-size: 1.2rem;
   color: #1a1a2e;
-  margin-right: auto;
+  line-height: 1.25;
 }
 
 .table-desc {
@@ -29,6 +36,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
 .row-count {
@@ -39,8 +47,8 @@
 
 .inline-form {
   gap: 0.5rem;
-  padding: 0.75rem 1rem;
-  background: #f8f9ff;
+  padding: 0.85rem 1rem;
+  background: #fbfcff;
   border-bottom: 1px solid #e0e0e0;
   align-items: center;
   flex-wrap: wrap;
@@ -76,6 +84,29 @@
   display: flex;
   flex-direction: column;
   align-items: stretch;
+  gap: 0.65rem;
+}
+
+.import-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #6b7280;
+  font-size: 0.85rem;
+}
+
+.file-picker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 0 0.75rem;
+  border: 1px solid #c8d3f6;
+  border-radius: 4px;
+  background: #eef3ff;
+  color: #2752b8;
+  cursor: pointer;
+  font-weight: 600;
 }
 
 .import-form textarea {
@@ -91,7 +122,6 @@
 .form-actions {
   display: flex;
   gap: 0.5rem;
-  margin-top: 0.5rem;
 }
 
 /* Enrichment progress bar */
@@ -158,12 +188,15 @@
 .grid-container {
   flex: 1;
   position: relative;
+  min-height: 0;
+  background: white;
 }
 
 .empty-grid {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 0.75rem;
   height: 100%;
   color: #999;
   font-size: 0.95rem;
@@ -201,4 +234,42 @@
 
 .context-menu button:hover {
   background: #fef2f2;
+}
+
+.success {
+  background: #ecfdf3;
+  color: #047857;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #bbf7d0;
+  font-size: 0.9rem;
+}
+
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+@media (max-width: 760px) {
+  .table-toolbar {
+    align-items: flex-start;
+  }
+
+  .table-title,
+  .toolbar-actions {
+    width: 100%;
+  }
+
+  .toolbar-actions button {
+    flex: 1 1 auto;
+  }
+
+  .column-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .import-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 }

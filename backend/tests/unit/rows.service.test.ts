@@ -84,6 +84,27 @@ describe('createRow', () => {
   });
 });
 
+describe('updateRow', () => {
+  it('patches one cell without replacing the full row data object', async () => {
+    query.mockResolvedValue({
+      rows: [{
+        id: 'r1',
+        table_id: 't1',
+        data: { name: 'Ada', company: 'Gellop' },
+        created_at: 'now',
+        updated_at: 'now',
+      }],
+      rowCount: 1,
+    });
+
+    await rowService.updateRow('r1', 't1', 'u1', { company: 'Gellop' });
+
+    const [sql, params] = query.mock.calls[0];
+    expect(sql).toMatch(/data = data \|\|/i);
+    expect(params?.[2]).toBe(JSON.stringify({ company: 'Gellop' }));
+  });
+});
+
 describe('exportCsv', () => {
   it('generates CSV from table data', async () => {
     tableService.getTable.mockResolvedValue({
