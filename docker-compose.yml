@@ -9,8 +9,8 @@ services:
       - PORT=3000
       - HOST=0.0.0.0
       - NODE_ENV=production
-      - DATABASE_URL=postgres://clayite:clayite_pass@db:5432/clayite
-      - JWT_SECRET=change-me-to-a-real-secret-in-production
+      - DATABASE_URL=postgres://clayite:${DB_PASS:-clayite_pass}@db:5432/clayite
+      - JWT_SECRET=${JWT_SECRET:-change-me}
       - JWT_EXPIRES_IN=7d
       - REDIS_URL=redis://redis:6379/0
       - CORS_ORIGIN=http://localhost:5173
@@ -40,7 +40,7 @@ services:
       - "5432:5432"
     environment:
       POSTGRES_USER: clayite
-      POSTGRES_PASSWORD: clayite_pass
+      POSTGRES_PASSWORD: ${DB_PASS:-cla…}
       POSTGRES_DB: clayite
     volumes:
       - pgdata:/var/lib/postgresql/data
