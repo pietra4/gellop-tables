@@ -1,0 +1,204 @@
+.table-view {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.table-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: white;
+  border-bottom: 1px solid #e0e0e0;
+  flex-wrap: wrap;
+}
+
+.table-toolbar h2 {
+  font-size: 1.2rem;
+  color: #1a1a2e;
+  margin-right: auto;
+}
+
+.table-desc {
+  font-size: 0.85rem;
+  color: #888;
+}
+
+.toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.row-count {
+  font-size: 0.85rem;
+  color: #888;
+  margin-right: 0.5rem;
+}
+
+.inline-form {
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: #f8f9ff;
+  border-bottom: 1px solid #e0e0e0;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.column-form {
+  display: flex;
+  flex-direction: row;
+}
+
+.inline-form input,
+.inline-form select {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d0d0d0;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.enrichment-config {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.enrichment-config input,
+.enrichment-config select {
+  flex: 1;
+  min-width: 150px;
+}
+
+.import-form {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.import-form textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #d0d0d0;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.85rem;
+  resize: vertical;
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+/* Enrichment progress bar */
+
+.enrich-progress {
+  padding: 0.5rem 1rem;
+  background: #f0f7ff;
+  border-bottom: 1px solid #d0e0f0;
+}
+
+.enrich-progress-label {
+  font-size: 0.85rem;
+  color: #1a56db;
+  margin-bottom: 0.3rem;
+}
+
+.enrich-progress-bar {
+  height: 6px;
+  background: #e0e8f0;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.enrich-progress-fill {
+  height: 100%;
+  background: #3b82f6;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+/* Enrichment action buttons */
+
+.enrich-actions {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: #fafafa;
+  border-bottom: 1px solid #e0e0e0;
+  flex-wrap: wrap;
+}
+
+.btn-enrich {
+  padding: 0.35rem 0.75rem;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background 0.15s;
+}
+
+.btn-enrich:hover:not(:disabled) {
+  background: #2563eb;
+}
+
+.btn-enrich:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Grid container */
+
+.grid-container {
+  flex: 1;
+  position: relative;
+}
+
+.empty-grid {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #999;
+  font-size: 0.95rem;
+}
+
+/* Context menu */
+
+.context-menu-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 998;
+}
+
+.context-menu {
+  position: fixed;
+  z-index: 999;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  overflow: hidden;
+}
+
+.context-menu button {
+  display: block;
+  width: 100%;
+  padding: 0.5rem 1rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-size: 0.9rem;
+  color: #dc2626;
+}
+
+.context-menu button:hover {
+  background: #fef2f2;
+}

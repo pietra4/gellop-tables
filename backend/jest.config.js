@@ -1,12 +1,13 @@
 export default {
-  preset: 'ts-jest/presets/default-esm',
   testEnvironment: 'node',
-  extensionsToTreatAsEsm: ['.ts'],
+  transform: {
+    '^.+\\.ts$': ['ts-jest', {
+      tsconfig: 'tsconfig.test.json',
+    }],
+  },
+  testMatch: ['**/tests/**/*.test.ts'],
   moduleNameMapper: {
     '^(\\.{1,2}/.*)\\.js$': '$1',
   },
-  transform: {
-    '^.+\\.ts$': ['ts-jest', { useESM: true, tsconfig: { module: 'ES2022' } }],
-  },
-  testMatch: ['**/tests/**/*.test.ts'],
+  transformIgnorePatterns: ['node_modules/(?!(.*\\.mjs$))'],
 };

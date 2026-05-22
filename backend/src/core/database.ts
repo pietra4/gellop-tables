@@ -20,10 +20,15 @@ export async function initializeDatabase(): Promise<void> {
   try {
     logger.info('Initializing database...');
 
-    const migrationPath = path.join(__dirname, '../../migrations/001_init_schema.sql');
-    const sql = fs.readFileSync(migrationPath, 'utf-8');
+    for (const migrationFile of ['001_init_schema.sql', '002_enrichment.sql']) {
+      const migrationPath = path.join(__dirname, '../../migrations', migrationFile);
+      if (fs.existsSync(migrationPath)) {
+        const sql = fs.readFileSync(migrationPath, 'utf-8');
+        await client.query(sql);
+        logger.info(`Applied migration: ${migrationFile}`);
+      }
+    }
 
-    await client.query(sql);
     logger.info('Database initialization complete');
   } catch (error) {
     logger.error('Database initialization failed', error);
@@ -33,7 +38,9 @@ export async function initializeDatabase(): Promise<void> {
   }
 }
 
-export async function query(text: string, params?: (string | number | boolean | object)[]): Promise<any> {
+export type QueryParam = string | number | boolean | object | null;
+
+export async function query(text: string, params?: QueryParam[]): Promise<any> {
   return pool.query(text, params);
 }
 

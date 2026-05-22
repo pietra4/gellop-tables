@@ -2,6 +2,22 @@
 
 This document explains the architecture and how to add new features.
 
+## Deploy (VPS / Raspberry Pi) — un comando
+
+```bash
+# Clona (prima volta)
+git clone <url> gellop-tables && cd gellop-tables
+
+# Build & avvia tutto (genera .env, builda docker, up)
+make deploy
+```
+
+Dopo aver configurato il remote, si aggiorna con:
+
+```bash
+git pull && make deploy
+```
+
 ## Backend Architecture
 
 ### Layer Structure

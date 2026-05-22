@@ -22,18 +22,25 @@ export interface Table {
   id: string;
   userId: string;
   name: string;
-  description?: string;
-  columns_metadata: Column[];
-  created_at: string;
-  updated_at: string;
+  description?: string | null;
+  columnsMetadata: Column[];
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Row {
   id: string;
   tableId: string;
   data: Record<string, any>;
-  created_at: string;
-  updated_at: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PaginatedRows {
+  rows: Row[];
+  total: number;
+  limit: number;
+  offset: number;
 }
 
 export interface EnrichmentJob {
