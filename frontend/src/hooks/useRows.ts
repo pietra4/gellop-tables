@@ -91,7 +91,14 @@ export const useRows = create<RowsState>((set, get) => ({
       });
       return response.data;
     } catch (error) {
-      // Fallback: try JSON wrapper
+      if (error && typeof error === 'object' && 'response' in error) {
+        const err = error as { response?: unknown };
+        // Backend has already parsed and responded: do not hide real CSV errors with a second call.
+        if (err.response) {
+          throw error;
+        }
+      }
+      // Fallback only for transport/parser edge cases.
       const response = await client.post(`/tables/${tableId}/import`, { content: csvContent });
       return response.data;
     }

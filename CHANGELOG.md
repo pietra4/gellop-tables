@@ -2,6 +2,16 @@
 
 Tutti i cambiamenti degni di nota.
 
+## 2026-05-23 — Hardening import CSV + refresh UI TableView
+
+### Fixed
+- **Import CSV body parsing**: rimosso fallback pericoloso che serializzava body JSON non valido in pseudo-CSV, ora l'endpoint accetta solo testo CSV reale o wrapper JSON con stringa CSV.
+- **CSV parser**: aggiunto strip BOM UTF-8 sulla prima intestazione, auto-rilevamento delimitatore (`,` `;` `tab`) e validazione rigida del numero colonne per riga.
+- **Regressione coperta**: nuovi test unitari per BOM, delimitatore `;` e righe incoerenti.
+
+### Changed
+- **TableView UX**: nuova struttura con sidebar workspace + area grid centrale e toolbar azioni, mantenendo Glide Data Grid come motore e senza regressioni su import/edit/enrichment.
+
 ## 2026-05-22 — Sviluppo completo Phase 1-3 + deploy su Raspberry Pi
 
 ### Added

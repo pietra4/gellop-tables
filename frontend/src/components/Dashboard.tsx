@@ -24,7 +24,7 @@ export const Dashboard: React.FC = () => {
       setShowCreate(false);
       navigate(`/tables/${table.id}`);
     } catch {
-      // error in store
+      // handled in store
     }
   };
 
@@ -35,9 +35,12 @@ export const Dashboard: React.FC = () => {
   return (
     <div className="dashboard">
       <div className="dashboard-header">
-        <h2>My Tables</h2>
-        <button className="btn-primary" onClick={() => setShowCreate(!showCreate)}>
-          {showCreate ? 'Cancel' : '+ New Table'}
+        <div className="dashboard-title">
+          <h2>Workspace</h2>
+          <p>Crea e gestisci le tue tabelle GTM in stile Clay.</p>
+        </div>
+        <button className="btn btn-primary" onClick={() => setShowCreate(!showCreate)}>
+          {showCreate ? 'Chiudi' : 'Nuova tabella'}
         </button>
       </div>
 
@@ -45,7 +48,7 @@ export const Dashboard: React.FC = () => {
         <form onSubmit={handleCreate} className="create-form">
           <input
             type="text"
-            placeholder="Table name"
+            placeholder="Nome tabella"
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
             required
@@ -53,11 +56,11 @@ export const Dashboard: React.FC = () => {
           />
           <input
             type="text"
-            placeholder="Description (optional)"
+            placeholder="Descrizione (opzionale)"
             value={newDesc}
             onChange={(e) => setNewDesc(e.target.value)}
           />
-          <button type="submit" className="btn-primary">Create</button>
+          <button type="submit" className="btn btn-primary">Crea</button>
         </form>
       )}
 
@@ -65,7 +68,7 @@ export const Dashboard: React.FC = () => {
 
       {tables.length === 0 && !loading ? (
         <div className="empty-state">
-          <p>No tables yet. Create one to get started.</p>
+          <p>Non ci sono tabelle. Creane una per iniziare.</p>
         </div>
       ) : (
         <div className="table-grid">
@@ -75,7 +78,10 @@ export const Dashboard: React.FC = () => {
                 <h3>{t.name}</h3>
                 <button
                   className="btn-delete"
-                  onClick={(e) => { e.stopPropagation(); if (confirm(`Delete "${t.name}"?`)) deleteTable(t.id); }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (confirm(`Delete "${t.name}"?`)) deleteTable(t.id);
+                  }}
                   title="Delete table"
                 >
                   ×
@@ -83,7 +89,7 @@ export const Dashboard: React.FC = () => {
               </div>
               {t.description && <p className="table-desc">{t.description}</p>}
               <div className="table-meta">
-                <span>{t.columnsMetadata.length} columns</span>
+                <span>{t.columnsMetadata.length} colonne</span>
               </div>
             </div>
           ))}

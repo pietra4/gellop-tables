@@ -49,8 +49,10 @@ export const TableView: React.FC = () => {
   const [enrichError, setEnrichError] = useState<string | null>(null);
   const [importStatus, setImportStatus] = useState<string | null>(null);
   const [isImporting, setIsImporting] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const wsRef = useRef<WebSocket | null>(null);
+  const refreshTimerRef = useRef<number | null>(null);
 
   const tables = useTables((s) => s.tables);
 
@@ -91,8 +93,14 @@ export const TableView: React.FC = () => {
         const msg = JSON.parse(event.data);
         if (msg.type === 'enrichment:progress' || msg.type === 'enrichment:completed' || msg.type === 'enrichment:failed') {
           updateRunProgress(msg.runId, msg.completedRows, msg.totalRows, msg.failedRows);
-          // Refresh rows to show updated data
-          fetchRows(id);
+          if (refreshTimerRef.current !== null) {
+            window.clearTimeout(refreshTimerRef.current);
+          }
+          // Coalesce bursty progress events into a single rows refresh.
+          refreshTimerRef.current = window.setTimeout(() => {
+            fetchRows(id);
+            refreshTimerRef.current = null;
+          }, 200);
         }
       } catch {
         // ignore
@@ -104,12 +112,21 @@ export const TableView: React.FC = () => {
     };
 
     return () => {
+      if (refreshTimerRef.current !== null) {
+        window.clearTimeout(refreshTimerRef.current);
+        refreshTimerRef.current = null;
+      }
       ws.close();
       wsRef.current = null;
     };
   }, [id, fetchRows, updateRunProgress]);
 
   const columns: Column[] = useMemo(() => table?.columnsMetadata ?? [], [table]);
+  const visibleTables = useMemo(() => {
+    const needle = searchQuery.trim().toLowerCase();
+    if (!needle) return tables;
+    return tables.filter((t) => t.name.toLowerCase().includes(needle));
+  }, [tables, searchQuery]);
 
   const gridColumns = useMemo(
     () =>
@@ -240,7 +257,30 @@ export const TableView: React.FC = () => {
   const enrichmentColumns = columns.filter((c) => c.type === 'enrichment');
 
   return (
-    <div className="table-view">
+    <div className="table-view-layout">
+      <aside className="table-sidebar">
+        <div className="sidebar-head">
+          <button className="btn-back" onClick={() => navigate('/')} aria-label="Back to dashboard">←</button>
+          <div>
+            <strong>Workspace</strong>
+            <p>{tables.length} tabelle</p>
+          </div>
+        </div>
+        <div className="sidebar-list">
+          {visibleTables.map((t) => (
+            <button
+              key={t.id}
+              className={`sidebar-item ${t.id === table.id ? 'active' : ''}`}
+              onClick={() => navigate(`/tables/${t.id}`)}
+            >
+              <span>{t.name}</span>
+              <small>{t.columnsMetadata.length} col</small>
+            </button>
+          ))}
+        </div>
+      </aside>
+
+      <div className="table-view">
       <div className="table-toolbar">
         <button className="btn-back" onClick={() => navigate('/')} aria-label="Back to dashboard">←</button>
         <div className="table-title">
@@ -249,6 +289,12 @@ export const TableView: React.FC = () => {
         </div>
         <div className="toolbar-actions">
           <span className="row-count">{total} rows</span>
+          <input
+            className="toolbar-search"
+            placeholder="Search tabelle..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
           <button className="btn-secondary" onClick={() => setShowAddColumn(!showAddColumn)}>
             + Column
           </button>
@@ -418,6 +464,17 @@ export const TableView: React.FC = () => {
           <DataEditor
             getCellContent={getCellContent}
             onCellEdited={onCellEdited}
+            onCellContextMenu={(cell, event) => {
+              event.preventDefault();
+              const [col, row] = cell;
+              if (row >= rows.length) return;
+              setContextMenu({
+                row,
+                col,
+                x: event.bounds.x + event.localEventX,
+                y: event.bounds.y + event.localEventY,
+              });
+            }}
             columns={gridColumns}
             rows={Math.max(rows.length, 1)}
             rowMarkers="both"
@@ -437,6 +494,7 @@ export const TableView: React.FC = () => {
           </div>
         </>
       )}
+      </div>
     </div>
   );
 };

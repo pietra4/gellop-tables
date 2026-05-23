@@ -21,17 +21,34 @@ const AppInner: React.FC = () => {
   }
 
   return (
-    <div className="app">
-      <div className="header">
-        <Link to="/" className="header-link">
-          <h1>Clay-lite</h1>
+    <div className="app-shell">
+      <header className="topbar">
+        <Link to="/" className="brand-link" aria-label="Go to dashboard">
+          <span className="brand-mark">GT</span>
+          <div className="brand-text">
+            <strong>Gellop Tables</strong>
+            <span>CRM Data Workspace</span>
+          </div>
         </Link>
-        <div className="user-info">
-          <span>{user.username}</span>
-          <button onClick={() => { logout(); navigate('/'); }}>Logout</button>
+
+        <div className="topbar-right">
+          <div className="user-chip">
+            <span className="user-dot" />
+            <span>{user.username}</span>
+          </div>
+          <button
+            className="btn btn-ghost"
+            onClick={() => {
+              logout();
+              navigate('/');
+            }}
+          >
+            Logout
+          </button>
         </div>
-      </div>
-      <main className="content">
+      </header>
+
+      <main className="page-content">
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/tables/:id" element={<TableView />} />
