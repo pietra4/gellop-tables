@@ -15,7 +15,7 @@ import logger from './utils/logger.js';
 
 const app = Fastify({
   logger: false,
-  bodyLimit: 1048576,
+  bodyLimit: 64 * 1024 * 1024,
 });
 
 // Accept raw CSV uploads (text/csv) as a string body for the import endpoint.
