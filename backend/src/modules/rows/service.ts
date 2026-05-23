@@ -24,6 +24,18 @@ export interface RowQuery {
   filters?: Record<string, string>;
 }
 
+function evalFormula(formula: string, rowData: Record<string, unknown>): unknown {
+  const compiled = formula.replace(/\{([^}]+)\}/g, (_, raw: string) => {
+    const value = rowData[raw.trim()];
+    if (typeof value === 'number' || typeof value === 'boolean') return String(value);
+    if (value === null || value === undefined) return '""';
+    return JSON.stringify(String(value));
+  });
+
+  // eslint-disable-next-line no-new-func
+  return Function(`"use strict"; return (${compiled});`)();
+}
+
 /** Verifies the user owns the table, throwing 404 otherwise. */
 async function assertTableAccess(tableId: string, userId: string): Promise<void> {
   await tableService.getTable(tableId, userId);
@@ -113,6 +125,38 @@ export async function importCsv(
   const imported = await rowRepository.bulkInsert(tableId, parsed.records);
 
   return { imported, columns: parsed.headers };
+}
+
+export async function runFormula(
+  tableId: string,
+  userId: string,
+  columnName: string
+): Promise<{ updated: number; failed: number }> {
+  const table = await tableService.getTable(tableId, userId);
+  const colMeta = table.columnsMetadata.find((c) => c.name === columnName);
+
+  if (!colMeta) {
+    throw new NotFoundError('Column');
+  }
+  if (colMeta.type !== 'formula' || !colMeta.formula) {
+    throw new ValidationError(`Column \"${columnName}\" is not a formula column`);
+  }
+
+  const allRows = await rowRepository.listAllByTable(tableId);
+  let updated = 0;
+  let failed = 0;
+
+  for (const row of allRows) {
+    try {
+      const value = evalFormula(colMeta.formula, row.data);
+      await rowRepository.patchData(row.id, tableId, { [columnName]: value });
+      updated++;
+    } catch {
+      failed++;
+    }
+  }
+
+  return { updated, failed };
 }
 
 /** Exports all rows to CSV text. */

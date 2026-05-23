@@ -24,6 +24,10 @@ const RowQuerySchema = z.object({
   // Filters passed as filter[col]=value, captured generically via the wildcard below
 });
 
+const RunFormulaSchema = z.object({
+  columnName: z.string().min(1),
+});
+
 export async function createRowHandler(request: FastifyRequest, reply: FastifyReply) {
   const userId = extractUserId(request);
   const { id: tableId } = request.params as { id: string };
@@ -97,4 +101,13 @@ export async function importCsvHandler(request: FastifyRequest, reply: FastifyRe
 
   const result = await rowService.importCsv(tableId, userId, csvContent);
   reply.status(201).send(result);
+}
+
+export async function runFormulaHandler(request: FastifyRequest, reply: FastifyReply) {
+  const userId = extractUserId(request);
+  const { id: tableId } = request.params as { id: string };
+  const { columnName } = parse(RunFormulaSchema, request.body);
+
+  const result = await rowService.runFormula(tableId, userId, columnName);
+  reply.send(result);
 }

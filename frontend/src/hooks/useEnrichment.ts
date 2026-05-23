@@ -22,6 +22,7 @@ interface EnrichmentState {
   fetchRuns: (tableId: string, columnName: string, limit?: number) => Promise<void>;
   fetchRun: (runId: string) => Promise<void>;
   updateRunProgress: (runId: string, completed: number, total: number, failed: number) => void;
+  setRunStatus: (runId: string, status: EnrichmentRun['status']) => void;
 }
 
 export const useEnrichment = create<EnrichmentState>((set, get) => ({
@@ -75,6 +76,18 @@ export const useEnrichment = create<EnrichmentState>((set, get) => ({
           totalRows: total,
           failedRows: failed,
           status: completed + failed >= total ? 'completed' : 'running',
+        },
+      });
+    }
+  },
+
+  setRunStatus: (runId: string, status: EnrichmentRun['status']) => {
+    const run = get().currentRun;
+    if (run && run.id === runId) {
+      set({
+        currentRun: {
+          ...run,
+          status,
         },
       });
     }

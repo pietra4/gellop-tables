@@ -16,6 +16,7 @@ interface TablesState {
   createTable: (payload: CreateTablePayload) => Promise<Table>;
   deleteTable: (id: string) => Promise<void>;
   addColumn: (tableId: string, column: Partial<Column> & { name: string; type: string }) => Promise<Table>;
+  deleteColumn: (tableId: string, columnName: string) => Promise<Table>;
 }
 
 function message(error: any, fallback: string): string {
@@ -81,6 +82,12 @@ export const useTables = create<TablesState>((set, get) => ({
 
   addColumn: async (tableId, column) => {
     const response = await client.post<Table>(`/tables/${tableId}/columns`, column);
+    set({ tables: get().tables.map((t) => (t.id === tableId ? response.data : t)) });
+    return response.data;
+  },
+
+  deleteColumn: async (tableId, columnName) => {
+    const response = await client.delete<Table>(`/tables/${tableId}/columns/${encodeURIComponent(columnName)}`);
     set({ tables: get().tables.map((t) => (t.id === tableId ? response.data : t)) });
     return response.data;
   },
