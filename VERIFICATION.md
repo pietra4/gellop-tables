@@ -1,4 +1,17 @@
-# Verification Pass (Opus) — 2026-05-22
+# Verification Pass — aggiornamento 2026-05-23
+
+## Aggiornamenti verificati (2026-05-23)
+
+Sono state verificate build verdi dopo i cambi Clay-like e formula API.
+
+Backend:
+- `npm run build` ✅
+
+Frontend:
+- `npm run build` ✅
+
+Note:
+- Warning di bundle Glide Data Grid restano non bloccanti (dimensione chunk/commenti pure annotations).
 
 This document records what was **actually executed and verified**, as opposed to
 reviewed on paper. An earlier set of review documents (SECURITY.md, BUG_REPORT.md,

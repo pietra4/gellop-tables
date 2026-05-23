@@ -1,4 +1,4 @@
-# Clay-lite Platform
+# Gellop Tables
 
 A self-hosted, interactive data table platform similar to Clay, but lightweight and focused on core table functionality.
 
@@ -6,9 +6,9 @@ A self-hosted, interactive data table platform similar to Clay, but lightweight 
 
 - **Interactive Data Tables**: Import CSV, add/remove columns, edit cells
 - **Enrichment via API**: Add columns that call external APIs and populate cells
-- **Powerful Formulas**: Clay-like formulas (IF, CONCAT, date, aggregations, etc.)
+- **Formula Columns (server-run)**: formula columns can be executed in bulk with API feedback
 - **Multi-user Support**: User authentication with JWT
-- **Filtering & Sorting**: Interactive filters on any column
+- **Filtering, Sorting, Saved Views**: per-column filters, sorting, and saved table views
 - **Webhook Integration**: Add rows to tables via webhooks
 - **Performance**: Handles 25k–100k rows efficiently with virtual scrolling
 
@@ -115,11 +115,12 @@ clayite/
 - `POST /tables/:id/rows` - Add row
 - `PUT /tables/:id/rows/:rowId` - Update row
 - `DELETE /tables/:id/rows/:rowId` - Delete row
+- `POST /tables/:id/formula/run` - Run a formula column on all rows
 
 ### Enrichment
-- `POST /tables/:id/columns/:colId/enrich` - Start enrichment job
-- `GET /tables/:id/jobs` - List jobs
-- `GET /tables/:id/jobs/:jobId` - Get job status
+- `POST /tables/:id/enrich` - Start enrichment for a column name
+- `GET /tables/:id/enrich/runs` - List enrichment runs
+- `GET /tables/:id/enrich/runs/:runId` - Get run status
 
 ## Security
 

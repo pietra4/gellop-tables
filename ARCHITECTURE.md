@@ -1,8 +1,8 @@
 # Clay-lite Platform — Documento Architetturale
 
-**Versione:** 1.0  
-**Data:** 2026-05-22  
-**Stato:** Proposta (in attesa di approvazione)
+**Versione:** 1.1  
+**Data:** 2026-05-23  
+**Stato:** Implementato (MVP operativo)
 
 ---
 
@@ -166,11 +166,11 @@ GET /tables/:id/rows — List rows (paginated, with filters)
 PUT /tables/:id/rows/:row_id — Update row
 DELETE /tables/:id/rows/:row_id
 
-PATCH /tables/:id/columns/:col_id — Update column config (enrichment settings)
-POST /tables/:id/columns/:col_id/enrich — Start enrichment for a column
+POST /tables/:id/enrich — Start enrichment per columnName
+GET /tables/:id/enrich/runs — List enrichment runs
+GET /tables/:id/enrich/runs/:run_id — Run detail
 
-GET /tables/:id/jobs — List enrichment jobs + status
-GET /tables/:id/jobs/:job_id — Job detail + result
+POST /tables/:id/formula/run — Bulk-run formula column
 
 POST /webhooks/:table_id/:auth_token — Add rows via webhook
 ```

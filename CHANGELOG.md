@@ -2,6 +2,21 @@
 
 Tutti i cambiamenti degni di nota.
 
+## 2026-05-23 — Clay-like UX consolidation + formula run API
+
+### Added
+- Endpoint `POST /tables/:id/formula/run` per esecuzione server-side delle colonne formula su tutte le righe con risultato `{updated, failed}`.
+- Menu colonna in header table view con azioni operative (sort asc/desc, run enrichment, run formula, delete column).
+- Salvataggio viste tabella in frontend (localStorage), con stato filtri/sort.
+
+### Changed
+- Table view portata in modalità full-page (rimozione sidebar workspace nella schermata tabella).
+- Feedback UX esplicito per enrichment e formula (avvio/progresso/esito/errori).
+
+### Fixed
+- `useEnrichment` esteso con `setRunStatus` per allineare stato run via websocket.
+- Hook tabelle esteso con `deleteColumn` verso endpoint backend esistente.
+
 ## 2026-05-23 — Hardening import CSV + refresh UI TableView
 
 ### Fixed

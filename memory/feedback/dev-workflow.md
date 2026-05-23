@@ -9,6 +9,8 @@ Quando lavoriamo su un progetto di sviluppo, la versione nuova va sempre caricat
 
 Quando Pietro chiede un progetto “finito”, non bisogna fermarsi a step/iterazioni dichiarate: si continua a iterare fino a completezza 100% percepita dall'utente, poi si pusha.
 
+Prima del push finale di un progetto finito, anche la documentazione di progetto va aggiornata e allineata alle modifiche reali (README/CHANGELOG/ARCHITECTURE/VERIFICATION quando pertinente).
+
 Se il push non funziona, la procedura standard non è fermarsi: bisogna fare subito login GitHub nella sessione corrente e poi riprovare il push fino a conferma.
 
 Per evitare di perdere la sessione come nel primo tentativo, usare un path di config scrivibile nella sessione (`XDG_CONFIG_HOME=/tmp/ghcfg`) e poi:
