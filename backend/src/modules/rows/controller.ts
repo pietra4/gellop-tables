@@ -85,9 +85,9 @@ export async function importCsvHandler(request: FastifyRequest, reply: FastifyRe
   } else if (Buffer.isBuffer(body)) {
     csvContent = body.toString('utf-8');
   } else if (body && typeof body === 'object') {
-    csvContent = (body as any).content || (body as any).csv || '';
-    if (typeof csvContent !== 'string') {
-      csvContent = JSON.stringify(body);
+    const candidate = (body as any).content || (body as any).csv || '';
+    if (typeof candidate === 'string') {
+      csvContent = candidate;
     }
   }
 

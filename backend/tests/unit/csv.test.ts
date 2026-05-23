@@ -34,9 +34,23 @@ describe('parseCsv', () => {
     ]);
   });
 
-  it('fills missing trailing cells with empty strings', () => {
-    const { records } = parseCsv('a,b,c\n1,2');
-    expect(records[0]).toEqual({ a: '1', b: '2', c: '' });
+  it('throws if any data row has a different number of columns than the header', () => {
+    expect(() => parseCsv('a,b,c\n1,2')).toThrow(/expected 3/i);
+  });
+
+  it('strips UTF-8 BOM from the first header', () => {
+    const { headers, records } = parseCsv('\uFEFFname,age\nAlice,30');
+    expect(headers).toEqual(['name', 'age']);
+    expect(records[0]).toEqual({ name: 'Alice', age: '30' });
+  });
+
+  it('auto-detects semicolon delimiter', () => {
+    const { headers, records } = parseCsv('name;age\nAlice;30\nBob;25');
+    expect(headers).toEqual(['name', 'age']);
+    expect(records).toEqual([
+      { name: 'Alice', age: '30' },
+      { name: 'Bob', age: '25' },
+    ]);
   });
 
   it('trims header whitespace', () => {

@@ -18,7 +18,10 @@ export function parseCsv(input: string): ParsedCsv {
     return { headers: [], records: [] };
   }
 
-  const headers = rows[0].map((h) => h.trim());
+  const headers = rows[0].map((h, idx) => {
+    const normalized = idx === 0 ? h.replace(/^\uFEFF/, '') : h;
+    return normalized.trim();
+  });
   const seen = new Set<string>();
   for (const h of headers) {
     if (h === '') {
@@ -37,6 +40,11 @@ export function parseCsv(input: string): ParsedCsv {
     if (cells.length === 1 && cells[0] === '') {
       continue;
     }
+    if (cells.length !== headers.length) {
+      throw new Error(
+        `CSV row ${i + 1} has ${cells.length} fields, expected ${headers.length}`
+      );
+    }
     const record: Record<string, string> = {};
     headers.forEach((header, idx) => {
       record[header] = cells[idx] ?? '';
@@ -49,6 +57,7 @@ export function parseCsv(input: string): ParsedCsv {
 
 /** Splits raw CSV text into rows of string cells, respecting quotes. */
 function parseRows(input: string): string[][] {
+  const delimiter = detectDelimiter(input);
   const rows: string[][] = [];
   let row: string[] = [];
   let field = '';
@@ -80,7 +89,7 @@ function parseRows(input: string): string[][] {
       i++;
       continue;
     }
-    if (char === ',') {
+    if (char === delimiter) {
       row.push(field);
       field = '';
       i++;
@@ -110,4 +119,40 @@ function parseRows(input: string): string[][] {
   }
 
   return rows;
+}
+
+function detectDelimiter(input: string): string {
+  const sample = input.slice(0, 2048);
+  const candidates = [',', ';', '\t'];
+  const counts = new Map<string, number>(candidates.map((c) => [c, 0]));
+  let inQuotes = false;
+
+  for (let i = 0; i < sample.length; i++) {
+    const char = sample[i];
+    if (char === '"') {
+      if (inQuotes && sample[i + 1] === '"') {
+        i++;
+        continue;
+      }
+      inQuotes = !inQuotes;
+      continue;
+    }
+    if (!inQuotes && counts.has(char)) {
+      counts.set(char, (counts.get(char) || 0) + 1);
+    }
+    if (!inQuotes && (char === '\n' || char === '\r')) {
+      break;
+    }
+  }
+
+  let best = ',';
+  let bestCount = -1;
+  for (const candidate of candidates) {
+    const count = counts.get(candidate) || 0;
+    if (count > bestCount) {
+      best = candidate;
+      bestCount = count;
+    }
+  }
+  return best;
 }
